@@ -1,19 +1,3 @@
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-
-class Transaction extends Model
-{
-    protected $fillable = [
-        'user_id',
-        'category_id',
-        'type',
-        'amount',
-        'date',
-        'description',
-    ];
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -93,13 +77,3 @@ class Transaction extends Model
         </div>
     </div>
 </x-app-layout>
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
-}
