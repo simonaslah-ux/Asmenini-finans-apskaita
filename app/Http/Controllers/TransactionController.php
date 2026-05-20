@@ -2,64 +2,99 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $transactions = Transaction::with('category')
+            ->where('user_id', Auth::id())
+            ->orderBy('date', 'desc')
+            ->get();
+
+        return view('transactions.index', compact('transactions'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $categories = Category::where('user_id', Auth::id())->get();
+
+        return view('transactions.create', compact('categories'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'type' => 'required|in:income,expense',
+            'amount' => 'required|numeric|min:0.01',
+            'date' => 'required|date',
+            'description' => 'nullable|string|max:255',
+        ]);
+
+        Transaction::create([
+            'user_id' => Auth::id(),
+            'category_id' => $request->category_id,
+            'type' => $request->type,
+            'amount' => $request->amount,
+            'date' => $request->date,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->route('transactions.index')
+            ->with('success', 'Įrašas sėkmingai sukurtas.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Transaction $transaction)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Transaction $transaction)
     {
-        //
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $categories = Category::where('user_id', Auth::id())->get();
+
+        return view('transactions.edit', compact('transaction', 'categories'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Transaction $transaction)
     {
-        //
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'type' => 'required|in:income,expense',
+            'amount' => 'required|numeric|min:0.01',
+            'date' => 'required|date',
+            'description' => 'nullable|string|max:255',
+        ]);
+
+        $transaction->update([
+            'category_id' => $request->category_id,
+            'type' => $request->type,
+            'amount' => $request->amount,
+            'date' => $request->date,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->route('transactions.index')
+            ->with('success', 'Įrašas sėkmingai atnaujintas.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Transaction $transaction)
     {
-        //
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $transaction->delete();
+
+        return redirect()->route('transactions.index')
+            ->with('success', 'Įrašas sėkmingai ištrintas.');
     }
 }
