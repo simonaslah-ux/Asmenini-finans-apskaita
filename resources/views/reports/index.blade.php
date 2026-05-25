@@ -1,0 +1,212 @@
+@extends('layouts.admin')
+
+@section('title', 'Ataskaitos')
+
+@section('content')
+
+<div class="card mb-4">
+    <div class="card-header">
+        <strong>Ataskaitos filtrai</strong>
+    </div>
+
+    <div class="card-body">
+        <form method="GET" action="{{ route('reports.index') }}" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Data nuo</label>
+                <input type="date" name="start_date" value="{{ $startDate }}" class="form-control">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Data iki</label>
+                <input type="date" name="end_date" value="{{ $endDate }}" class="form-control">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Kategorija</label>
+                <select name="category_id" class="form-control">
+                    <option value="">Visos kategorijos</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}" @selected($categoryId == $category->id)>
+                            {{ $category->name }}
+                            @if ($category->type == 'income')
+                                - Pajamos
+                            @else
+                                - Išlaidos
+                            @endif
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">Filtruoti</button>
+                <a href="{{ route('reports.index') }}" class="btn btn-secondary">Valyti</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="small-box text-bg-success">
+            <div class="inner">
+                <h3>{{ number_format($totalIncome, 2) }} €</h3>
+                <p>Pajamos pagal filtrą</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="small-box text-bg-danger">
+            <div class="inner">
+                <h3>{{ number_format($totalExpense, 2) }} €</h3>
+                <p>Išlaidos pagal filtrą</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="small-box text-bg-primary">
+            <div class="inner">
+                <h3>{{ number_format($balance, 2) }} €</h3>
+                <p>Likutis pagal filtrą</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <strong>Statistinė analizė</strong>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <strong>Įrašų skaičius:</strong><br>
+                {{ $transactions->count() }}
+            </div>
+
+            <div class="col-md-3">
+                <strong>Mažiausia suma:</strong><br>
+                {{ number_format($minAmount, 2) }} €
+            </div>
+
+            <div class="col-md-3">
+                <strong>Didžiausia suma:</strong><br>
+                {{ number_format($maxAmount, 2) }} €
+            </div>
+
+            <div class="col-md-3">
+                <strong>Vidutinė suma:</strong><br>
+                {{ number_format($avgAmount, 2) }} €
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <strong>Suvestinė pagal kategorijas</strong>
+    </div>
+
+    <div class="card-body">
+        <canvas id="categoryChart" height="100"></canvas>
+
+        <table class="table table-bordered table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>Kategorija</th>
+                    <th>Suma</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($categorySummary as $summary)
+                    <tr>
+                        <td>{{ $summary['category'] }}</td>
+                        <td>{{ number_format($summary['total'], 2) }} €</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="2" class="text-center">Duomenų nėra.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <strong>Ataskaitos įrašai</strong>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipas</th>
+                    <th>Kategorija</th>
+                    <th>Suma</th>
+                    <th>Aprašymas</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($transactions as $transaction)
+                    <tr>
+                        <td>{{ $transaction->date }}</td>
+                        <td>
+                            @if ($transaction->type == 'income')
+                                Pajamos
+                            @else
+                                Išlaidos
+                            @endif
+                        </td>
+                        <td>{{ $transaction->category->name ?? '-' }}</td>
+                        <td>{{ number_format($transaction->amount, 2) }} €</td>
+                        <td>{{ $transaction->description }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center">Įrašų pagal pasirinktus filtrus nėra.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const categoryLabels = @json($categorySummary->pluck('category'));
+    const categoryTotals = @json($categorySummary->pluck('total'));
+
+    const ctx = document.getElementById('categoryChart');
+
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    label: 'Suma pagal kategoriją',
+                    data: categoryTotals
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+</script>
+@endsection

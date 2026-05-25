@@ -1,51 +1,40 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Redaguoti kategoriją
-        </h2>
-    </x-slot>
+@extends('layouts.admin')
 
-    <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+@section('title', 'Redaguoti kategoriją')
 
-                    <form method="POST" action="{{ route('categories.update', $category) }}">
-                        @csrf
-                        @method('PUT')
+@section('content')
 
-                        <div class="mb-4">
-                            <label class="block mb-1">Pavadinimas</label>
-                            <input type="text" name="name" value="{{ old('name', $category->name) }}"
-                                   class="w-full border-gray-300 rounded">
-                            @error('name')
-                                <div class="text-red-600 text-sm">{{ $message }}</div>
-                            @enderror
-                        </div>
+<div class="card">
+    <div class="card-body">
+        <form method="POST" action="{{ route('categories.update', $category) }}">
+            @csrf
+            @method('PUT')
 
-                        <div class="mb-4">
-                            <label class="block mb-1">Tipas</label>
-                            <select name="type" class="w-full border-gray-300 rounded">
-                                <option value="income" @selected($category->type == 'income')>Pajamos</option>
-                                <option value="expense" @selected($category->type == 'expense')>Išlaidos</option>
-                            </select>
-                            @error('type')
-                                <div class="text-red-600 text-sm">{{ $message }}</div>
-                            @enderror
-                        </div>
+            <div class="mb-3">
+                <label class="form-label">Pavadinimas</label>
+                <input type="text" name="name" value="{{ old('name', $category->name) }}" class="form-control">
 
-                        <button type="submit"
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            Atnaujinti
-                        </button>
-
-                        <a href="{{ route('categories.index') }}" class="ml-3 text-gray-600">
-                            Atgal
-                        </a>
-                    </form>
-
-                </div>
+                @error('name')
+                    <div class="text-danger small">{{ $message }}</div>
+                @enderror
             </div>
-        </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tipas</label>
+                <select name="type" class="form-control">
+                    <option value="income" @selected($category->type == 'income')>Pajamos</option>
+                    <option value="expense" @selected($category->type == 'expense')>Išlaidos</option>
+                </select>
+
+                @error('type')
+                    <div class="text-danger small">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <button type="submit" class="btn btn-primary">Atnaujinti</button>
+            <a href="{{ route('categories.index') }}" class="btn btn-secondary">Atgal</a>
+        </form>
     </div>
-</x-app-layout>
+</div>
+
+@endsection

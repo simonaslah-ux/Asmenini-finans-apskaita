@@ -1,107 +1,92 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Finansų suvestinė
-        </h2>
-    </x-slot>
+@extends('layouts.admin')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+@section('title', 'Finansų suvestinė')
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-700">Bendros pajamos</h3>
-                        <p class="text-2xl font-bold text-green-600">
-                            {{ number_format($totalIncome, 2) }} €
-                        </p>
-                    </div>
-                </div>
+@section('content')
 
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-700">Bendros išlaidos</h3>
-                        <p class="text-2xl font-bold text-red-600">
-                            {{ number_format($totalExpense, 2) }} €
-                        </p>
-                    </div>
-                </div>
-
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-700">Likutis</h3>
-                        <p class="text-2xl font-bold text-blue-600">
-                            {{ number_format($balance, 2) }} €
-                        </p>
-                    </div>
-                </div>
+<div class="row mb-4">
+    <div class="col-lg-4 col-12">
+        <div class="small-box text-bg-success">
+            <div class="inner">
+                <h3>{{ number_format($totalIncome, 2) }} €</h3>
+                <p>Bendros pajamos</p>
             </div>
-
-            <div class="mb-4 flex gap-3">
-                <a href="{{ route('transactions.create') }}"
-                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Pridėti įrašą
-                </a>
-
-                <a href="{{ route('categories.index') }}"
-                   class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    Kategorijos
-                </a>
-
-                <a href="{{ route('transactions.index') }}"
-                   class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Visi įrašai
-                </a>
+            <div class="icon">
+                <i class="bi bi-arrow-down-circle"></i>
             </div>
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <h3 class="text-lg font-semibold mb-4">Paskutiniai įrašai</h3>
-
-                    <table class="min-w-full border">
-                        <thead>
-                            <tr>
-                                <th class="border px-4 py-2 text-left">Data</th>
-                                <th class="border px-4 py-2 text-left">Tipas</th>
-                                <th class="border px-4 py-2 text-left">Kategorija</th>
-                                <th class="border px-4 py-2 text-left">Suma</th>
-                                <th class="border px-4 py-2 text-left">Aprašymas</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($latestTransactions as $transaction)
-                                <tr>
-                                    <td class="border px-4 py-2">{{ $transaction->date }}</td>
-                                    <td class="border px-4 py-2">
-                                        @if ($transaction->type == 'income')
-                                            Pajamos
-                                        @else
-                                            Išlaidos
-                                        @endif
-                                    </td>
-                                    <td class="border px-4 py-2">
-                                        {{ $transaction->category->name ?? '-' }}
-                                    </td>
-                                    <td class="border px-4 py-2">
-                                        {{ number_format($transaction->amount, 2) }} €
-                                    </td>
-                                    <td class="border px-4 py-2">
-                                        {{ $transaction->description }}
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="border px-4 py-2 text-center">
-                                        Įrašų dar nėra.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-
-                </div>
-            </div>
-
         </div>
     </div>
-</x-app-layout>
+
+    <div class="col-lg-4 col-12">
+        <div class="small-box text-bg-danger">
+            <div class="inner">
+                <h3>{{ number_format($totalExpense, 2) }} €</h3>
+                <p>Bendros išlaidos</p>
+            </div>
+            <div class="icon">
+                <i class="bi bi-arrow-up-circle"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-12">
+        <div class="small-box text-bg-primary">
+            <div class="inner">
+                <h3>{{ number_format($balance, 2) }} €</h3>
+                <p>Likutis</p>
+            </div>
+            <div class="icon">
+                <i class="bi bi-wallet2"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-3">
+    <a href="{{ route('transactions.create') }}" class="btn btn-primary">Pridėti įrašą</a>
+    <a href="{{ route('categories.index') }}" class="btn btn-secondary">Kategorijos</a>
+    <a href="{{ route('transactions.index') }}" class="btn btn-success">Visi įrašai</a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Paskutiniai įrašai</h3>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipas</th>
+                    <th>Kategorija</th>
+                    <th>Suma</th>
+                    <th>Aprašymas</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($latestTransactions as $transaction)
+                    <tr>
+                        <td>{{ $transaction->date }}</td>
+                        <td>
+                            @if ($transaction->type == 'income')
+                                Pajamos
+                            @else
+                                Išlaidos
+                            @endif
+                        </td>
+                        <td>{{ $transaction->category->name ?? '-' }}</td>
+                        <td>{{ number_format($transaction->amount, 2) }} €</td>
+                        <td>{{ $transaction->description }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center">Įrašų dar nėra.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@endsection

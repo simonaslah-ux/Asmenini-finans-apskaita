@@ -30,16 +30,19 @@ class TransactionController extends Controller
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'type' => 'required|in:income,expense',
             'amount' => 'required|numeric|min:0.01',
             'date' => 'required|date',
             'description' => 'nullable|string|max:255',
         ]);
 
+        $category = Category::where('user_id', Auth::id())
+            ->where('id', $request->category_id)
+            ->firstOrFail();
+
         Transaction::create([
             'user_id' => Auth::id(),
-            'category_id' => $request->category_id,
-            'type' => $request->type,
+            'category_id' => $category->id,
+            'type' => $category->type,
             'amount' => $request->amount,
             'date' => $request->date,
             'description' => $request->description,
@@ -68,15 +71,18 @@ class TransactionController extends Controller
 
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'type' => 'required|in:income,expense',
             'amount' => 'required|numeric|min:0.01',
             'date' => 'required|date',
             'description' => 'nullable|string|max:255',
         ]);
 
+        $category = Category::where('user_id', Auth::id())
+            ->where('id', $request->category_id)
+            ->firstOrFail();
+
         $transaction->update([
-            'category_id' => $request->category_id,
-            'type' => $request->type,
+            'category_id' => $category->id,
+            'type' => $category->type,
             'amount' => $request->amount,
             'date' => $request->date,
             'description' => $request->description,
