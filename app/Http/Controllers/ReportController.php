@@ -6,10 +6,12 @@ use App\Models\Category;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
-    public function index(Request $request)
+    private function getReportData(Request $request): array
     {
         $userId = Auth::id();
 
@@ -56,7 +58,7 @@ class ReportController extends Controller
             })
             ->values();
 
-        return view('reports.index', compact(
+        return compact(
             'transactions',
             'categories',
             'startDate',
@@ -69,6 +71,48 @@ class ReportController extends Controller
             'maxAmount',
             'avgAmount',
             'categorySummary'
-        ));
+        );
+    }
+
+    public function index(Request $request)
+    {
+        $data = $this->getReportData($request);
+
+        return view('reports.index', $data);
+    }
+
+    public function downloadPdf(Request $request)
+    {
+        $data = $this->getReportData($request);
+
+        $pdf = Pdf::loadView('reports.pdf', $data);
+
+        return $pdf->download('finansu-ataskaita.pdf');
+    }
+
+    public function sendEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $data = $this->getReportData($request);
+
+        $pdf = Pdf::loadView('reports.pdf', $data);
+
+        Mail::send([], [], function ($message) use ($request, $pdf) {
+            $message->to($request->email)
+                ->subject('Asmeninių finansų ataskaita')
+                ->html('Sveiki,<br><br>Prisegame sugeneruotą asmeninių finansų ataskaitą PDF formatu.')
+                ->attachData($pdf->output(), 'finansu-ataskaita.pdf', [
+                    'mime' => 'application/pdf',
+                ]);
+        });
+
+        return redirect()->route('reports.index', $request->only([
+            'start_date',
+            'end_date',
+            'category_id'
+        ]))->with('success', 'PDF ataskaita išsiųsta el. paštu.');
     }
 }

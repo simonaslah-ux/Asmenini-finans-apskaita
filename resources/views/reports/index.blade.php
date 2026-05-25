@@ -4,6 +4,12 @@
 
 @section('content')
 
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
 <div class="card mb-4">
     <div class="card-header">
         <strong>Ataskaitos filtrai</strong>
@@ -41,6 +47,43 @@
             <div class="col-md-3 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary me-2">Filtruoti</button>
                 <a href="{{ route('reports.index') }}" class="btn btn-secondary">Valyti</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <strong>PDF ataskaita</strong>
+    </div>
+
+    <div class="card-body">
+        <div class="mb-3">
+            <a href="{{ route('reports.pdf', request()->query()) }}" class="btn btn-danger">
+                Atsisiųsti PDF
+            </a>
+        </div>
+
+        <form method="POST" action="{{ route('reports.sendEmail') }}" class="row g-3">
+            @csrf
+
+            <input type="hidden" name="start_date" value="{{ $startDate }}">
+            <input type="hidden" name="end_date" value="{{ $endDate }}">
+            <input type="hidden" name="category_id" value="{{ $categoryId }}">
+
+            <div class="col-md-6">
+                <label class="form-label">El. paštas PDF siuntimui</label>
+                <input type="email" name="email" class="form-control" placeholder="pvz. test@test.lt">
+
+                @error('email')
+                    <div class="text-danger small">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">
+                    Siųsti PDF el. paštu
+                </button>
             </div>
         </form>
     </div>

@@ -22,8 +22,12 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('categories', CategoryController::class);
     Route::resource('transactions', TransactionController::class);
-    
+
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    
+    Route::get('/reports/pdf', [ReportController::class, 'downloadPdf'])->name('reports.pdf');
+    Route::post('/reports/send-email', [ReportController::class, 'sendEmail'])->name('reports.sendEmail');
+
 });
 
 require __DIR__.'/auth.php';
