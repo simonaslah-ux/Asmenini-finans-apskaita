@@ -1,0 +1,61 @@
+/* Šoninis meniu */
+.app-sidebar {
+    background-color: #1f2937 !important;
+}
+
+/* Šoninio meniu pavadinimas */
+.sidebar-brand {
+    background-color: #111827 !important;
+}
+
+/* Aktyvios / hover meniu nuorodos */
+.sidebar-menu .nav-link:hover,
+.sidebar-menu .nav-link.active {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+/* Viršutinė juosta */
+.app-header {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Puslapio fonas */
+.app-main {
+    background-color: #f3f4f6;
+}
+
+/* Kortelės */
+.card {
+    border-radius: 10px;
+}
+
+/* Dashboard kortelės */
+.small-box.text-bg-success {
+    background-color: #16a34a !important;
+}
+
+.small-box.text-bg-danger {
+    background-color: #e08181 !important;
+}
+
+.small-box.text-bg-primary {
+    background-color: #2563eb !important;
+}
+
+/* Mygtukai */
+.btn-primary {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+}
+
+.btn-success {
+    background-color: #16a34a !important;
+    border-color: #16a34a !important;
+}
+
+.btn-secondary {
+    background-color: #6b7280 !important;
+    border-color: #6b7280 !important;
+}
