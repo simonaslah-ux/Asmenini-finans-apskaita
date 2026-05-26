@@ -148,15 +148,39 @@
     </div>
 </div>
 
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <strong>Pajamos ir išlaidos</strong>
+            </div>
+
+            <div class="card-body">
+                <canvas id="incomeExpenseChart" height="160"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <strong>Išlaidų pasiskirstymas pagal kategorijas</strong>
+            </div>
+
+            <div class="card-body">
+                <canvas id="expenseCategoryChart" height="160"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card mb-4">
     <div class="card-header">
-        <strong>Suvestinė pagal kategorijas</strong>
+        <strong>Išlaidų suvestinė pagal kategorijas</strong>
     </div>
 
     <div class="card-body">
-        <canvas id="categoryChart" height="100"></canvas>
-
-        <table class="table table-bordered table-striped mt-4">
+        <table class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Kategorija</th>
@@ -226,26 +250,77 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const categoryLabels = @json($categorySummary->pluck('category'));
-    const categoryTotals = @json($categorySummary->pluck('total'));
+    const incomeExpenseLabels = @json($incomeExpenseLabels);
+    const incomeExpenseData = @json($incomeExpenseData);
 
-    const ctx = document.getElementById('categoryChart');
+    const expenseCategoryLabels = @json($expenseCategoryLabels);
+    const expenseCategoryData = @json($expenseCategoryData);
 
-    if (ctx) {
-        new Chart(ctx, {
+    const incomeExpenseChart = document.getElementById('incomeExpenseChart');
+
+    if (incomeExpenseChart) {
+        new Chart(incomeExpenseChart, {
             type: 'bar',
             data: {
-                labels: categoryLabels,
+                labels: incomeExpenseLabels,
                 datasets: [{
-                    label: 'Suma pagal kategoriją',
-                    data: categoryTotals
+                    label: 'Suma (€)',
+                    data: incomeExpenseData,
+                    backgroundColor: [
+                        'rgba(25, 135, 84, 0.6)',
+                        'rgba(220, 53, 69, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(25, 135, 84, 1)',
+                        'rgba(220, 53, 69, 1)'
+                    ],
+                    borderWidth: 1
                 }]
             },
             options: {
                 responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
                 scales: {
                     y: {
                         beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    const expenseCategoryChart = document.getElementById('expenseCategoryChart');
+
+    if (expenseCategoryChart) {
+        new Chart(expenseCategoryChart, {
+            type: 'doughnut',
+            data: {
+                labels: expenseCategoryLabels,
+                datasets: [{
+                    label: 'Išlaidos pagal kategorijas',
+                    data: expenseCategoryData,
+                    backgroundColor: [
+                        '#36A2EB',
+                        '#FF6384',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40',
+                        '#8BC34A',
+                        '#795548'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
                     }
                 }
             }

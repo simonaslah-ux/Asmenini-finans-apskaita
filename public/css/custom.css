@@ -11,7 +11,7 @@
 /* Aktyvios / hover meniu nuorodos */
 .sidebar-menu .nav-link:hover,
 .sidebar-menu .nav-link.active {
-    background-color: #2563eb !important;
+    background-color: #2596be !important;
     color: #ffffff !important;
 }
 
@@ -33,26 +33,26 @@
 
 /* Dashboard kortelės */
 .small-box.text-bg-success {
-    background-color: #16a34a !important;
+    background-color: #abbf24 !important;
 }
 
 .small-box.text-bg-danger {
-    background-color: #e08181 !important;
+    background-color: #ab5249 !important;
 }
 
 .small-box.text-bg-primary {
-    background-color: #2563eb !important;
+    background-color: #2596be !important;
 }
 
 /* Mygtukai */
 .btn-primary {
-    background-color: #2563eb !important;
-    border-color: #2563eb !important;
+    background-color: #2596be !important;
+    border-color: #2596be !important;
 }
 
 .btn-success {
-    background-color: #16a34a !important;
-    border-color: #16a34a !important;
+    background-color: #abbf24 !important;
+    border-color: #abbf24 !important;
 }
 
 .btn-secondary {

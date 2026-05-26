@@ -36,17 +36,22 @@ class ReportController extends Controller
 
         $transactions = $query->orderBy('date', 'desc')->get();
 
+        // Bendros sumos
         $totalIncome = $transactions->where('type', 'income')->sum('amount');
         $totalExpense = $transactions->where('type', 'expense')->sum('amount');
         $balance = $totalIncome - $totalExpense;
 
+        // Statistikos kortelėms
         $minAmount = $transactions->min('amount') ?? 0;
         $maxAmount = $transactions->max('amount') ?? 0;
         $avgAmount = $transactions->avg('amount') ?? 0;
 
+        // Kategorijos filtrui
         $categories = Category::where('user_id', $userId)->get();
 
+        // Tik išlaidų suvestinė pagal kategorijas
         $categorySummary = $transactions
+            ->where('type', 'expense')
             ->groupBy(function ($transaction) {
                 return $transaction->category->name ?? 'Be kategorijos';
             })
@@ -57,6 +62,14 @@ class ReportController extends Controller
                 ];
             })
             ->values();
+
+        // Duomenys 1 diagramai: pajamos vs išlaidos
+        $incomeExpenseLabels = ['Pajamos', 'Išlaidos'];
+        $incomeExpenseData = [$totalIncome, $totalExpense];
+
+        // Duomenys 2 diagramai: išlaidos pagal kategorijas
+        $expenseCategoryLabels = $categorySummary->pluck('category');
+        $expenseCategoryData = $categorySummary->pluck('total');
 
         return compact(
             'transactions',
@@ -70,7 +83,11 @@ class ReportController extends Controller
             'minAmount',
             'maxAmount',
             'avgAmount',
-            'categorySummary'
+            'categorySummary',
+            'incomeExpenseLabels',
+            'incomeExpenseData',
+            'expenseCategoryLabels',
+            'expenseCategoryData'
         );
     }
 
