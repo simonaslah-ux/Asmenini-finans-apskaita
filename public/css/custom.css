@@ -59,3 +59,15 @@
     background-color: #6b7280 !important;
     border-color: #6b7280 !important;
 }
+
+.pdf-download-btn {
+    background-color: #ab5249!important;
+    border-color: #ab5249 !important;
+    color: #fff !important;
+}
+
+.pdf-download-btn:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+    color: #fff !important;
+}

@@ -58,34 +58,40 @@
     </div>
 
     <div class="card-body">
-        <div class="mb-3">
-            <a href="{{ route('reports.pdf', request()->query()) }}" class="btn btn-danger">
-                Atsisiųsti PDF
-            </a>
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Atsisiųsti PDF</label><br>
+
+                <a href="{{ route('reports.pdf', request()->query()) }}" class="btn btn-danger pdf-download-btn">
+                Atsisiųsti
+                </a>
+            </div>
+
+            <div class="col-md-9">
+                <form method="POST" action="{{ route('reports.sendEmail') }}" class="row g-2 align-items-end">
+                    @csrf
+
+                    <input type="hidden" name="start_date" value="{{ $startDate }}">
+                    <input type="hidden" name="end_date" value="{{ $endDate }}">
+                    <input type="hidden" name="category_id" value="{{ $categoryId }}">
+
+                    <div class="col-md-8">
+                        <label class="form-label">Siųsti PDF el. paštu</label>
+                        <input type="email" name="email" class="form-control" placeholder="pvz. test@test.lt">
+
+                        @error('email')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary">
+                            Siųsti
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-
-        <form method="POST" action="{{ route('reports.sendEmail') }}" class="row g-3">
-            @csrf
-
-            <input type="hidden" name="start_date" value="{{ $startDate }}">
-            <input type="hidden" name="end_date" value="{{ $endDate }}">
-            <input type="hidden" name="category_id" value="{{ $categoryId }}">
-
-            <div class="col-md-6">
-                <label class="form-label">El. paštas PDF siuntimui</label>
-                <input type="email" name="email" class="form-control" placeholder="pvz. test@test.lt">
-
-                @error('email')
-                    <div class="text-danger small">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="col-md-6 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary">
-                    Siųsti PDF el. paštu
-                </button>
-            </div>
-        </form>
     </div>
 </div>
 

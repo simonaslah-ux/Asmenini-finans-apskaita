@@ -56,4 +56,50 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function createDefaultCategories(): void
+    {
+        $defaultCategories = [
+            [
+                'name' => 'Atlyginimas',
+                'type' => 'income',
+            ],
+            [
+                'name' => 'Stipendija',
+                'type' => 'income',
+            ],
+            [
+                'name' => 'Kita',
+                'type' => 'income',
+            ],
+            [
+                'name' => 'Maistas',
+                'type' => 'expense',
+            ],
+            [
+                'name' => 'Kuras',
+                'type' => 'expense',
+            ],
+            [
+                'name' => 'Komunaliniai',
+                'type' => 'expense',
+            ],
+            [
+                'name' => 'Nuoma',
+                'type' => 'expense',
+            ],
+            [
+                'name' => 'Pramogos',
+                'type' => 'expense',
+            ],
+            [
+                'name' => 'Kita',
+                'type' => 'expense',
+            ],
+        ];
+
+        foreach ($defaultCategories as $category) {
+            $this->categories()->create($category);
+        }
+    }
 }
